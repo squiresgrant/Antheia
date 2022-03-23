@@ -1,1 +1,1 @@
-{"crates":[{"price":5,"name":"test","contents":[{"color":"#000","rarity":"common","value":5}]},{"price":10,"name":"test2","contents":[{"color":"#000","rarity":"common","value":5}]}]}
+{"crates":[{"price":5,"name":"test","contents":[{"color":"#000","rarity":"common","value":5},{"color":"#0c0","rarity":"uncommon","value":10}]},{"price":10,"name":"test2","contents":[{"color":"#000","rarity":"common","value":5}]}]}
