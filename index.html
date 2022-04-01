@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>color;)</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <style>
+      #jstext {
+  text-align: center;
+  font-size: 900px;
+}
+}
+    </style>
+  </head>
+  <body>
+    
+    
+     <script>
+     let file = "./crates.json"
+       
+function min(item){
+      console.log(item)
+        x = document.getElementsByClassName(item)
+
+    //x[i].outerText="\ncontents: [ ... ] <div class='"+item+"'>"; 
+
+    x[0].hidden=!x[0].hidden
+    
+      }
+   function roll(item) {
+     fetch(file)
+.then(response => {
+   return response.json();
+})
+.then(data => {
+       //console.log(data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)])
+      var x = document.getElementById("popup");
+  if(x.style.display != "block"){ //anti spam check thingy
+    x.style.display = "block";
+  
+  x.innerHTML="you unboxed:</br></br><code> >> "+(data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)].color) + (' ( r = '+data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)].rarity+ " && value = " +data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)].value + ")</code>").fontsize(1)
+  x.style.background=(data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)].color)
+  setTimeout(function() { document.getElementById("popup").style.display = "none"; }, 3000);
+  }
+
+})
+      
+    } 
+       fetch(file)
+.then(response => {
+   return response.json();
+})
+
+.then(data => {
+
+    
+    console.log(data)
+    for(let crate of data.crates){
+      document.write("</br>price: "+crate.price)
+      document.write("</br>name: "+crate.name)
+      document.write("<div onclick='min(\""+data.crates.indexOf(crate)+"\")'</br>contents: [<div class='"+data.crates.indexOf(crate)+"'>")
+      for(let item of crate.contents){
+        if(item==crate.contents[0]){
+        document.write("{color:"+item.color+", rarity:"+item.rarity+", value:"+item.value+"}")
+        } else {
+        document.write("</br>{color:"+item.color+", rarity:"+item.rarity+", value:"+item.value+"}")
+        }
+        
+      }
+      document.write("</br></div>]</div>")
+      x = document.getElementsByClassName(data.crates.indexOf(crate))
+      x[0].hidden=true
+    //x[i].outerText="\ncontents: [ ... ] <div class='"+item+"'>"; 
+
+    
+    
+      document.write("</br><button onclick='roll("+data.crates.indexOf(crate)+")'>roll</button>")
+    //document.write("<p>" + d.crates[0].price + "</p>")
+      
+      
+      }
+    
+  
+  return(0)
+  }).then((open)=>{
+var number = 5; //just for an example
+//------------^ // Not sure but ; is a must in some places.
+document.write('<div id = "popup"style="height:50%;position:absolute;width:100%;top:25%;background: #1a1a1a;color:#fff;">null</div>')
+  
+  var x = document.getElementById("popup");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+
+
+
+})   
+  //
+
+    
+    </script>
+  
+
+  </body>
+</html>
