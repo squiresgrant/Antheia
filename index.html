@@ -4,21 +4,98 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>color;)</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
+   
     <style>
-      #jstext {
-  text-align: center;
-  font-size: 900px;
-}
-}
+     
+
     </style>
   </head>
   <body>
     
     
      <script>
-     let file = "./crates.json"
        
+       function createCookie(name, value, days) {
+    var expires;
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toGMTString();
+    }
+    else {
+        expires = "";
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
+
+function getCookie(c_name) {
+    if (document.cookie.length > 0) {
+        c_start = document.cookie.indexOf(c_name + "=");
+        if (c_start != -1) {
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) {
+                c_end = document.cookie.length;
+            }
+            return unescape(document.cookie.substring(c_start, c_end));
+        }
+    }
+    return "";
+}
+       function s(value, index){
+         var inv = getCookie('inv');
+         inv = JSON.parse(inv)
+         createCookie('bank', parseInt(getCookie('bank'))+parseInt(value));
+        inv.splice(index,1)
+         console.log(inv)
+        createCookie('inv', JSON.stringify(inv));
+        updateInv()
+
+     
+       }
+       function updateInv(){
+    var inve = document.getElementById("inv");
+    var inv = getCookie('inv');
+         inv = JSON.parse(inv)
+    var balance = document.getElementById("balance");
+         balance.innerHTML = getCookie("bank")
+         let i = ""
+         /*
+    for(let item of inv){
+      console.log(item)
+      i+=("<div style='color:"+item.color+";'>{color:"+String(item.color)+", rarity:"+String(item.rarity)+", value: "+String(item.value)+"}</div>")
+    }
+         */
+         for(let item of inv){
+      
+      let t = '{color:'+String(item.color)+', rarity:'+String(item.rarity)+', value: '+String(item.value)+'}'
+           
+      i+=("<div onclick='s("+item.value+","+inv.indexOf(item)+")' onmouseout='this.innerHTML = \""+t+"\"'onmouseover='this.innerHTML=\"sell?\"' id='"+inv.indexOf(item)+"'style='color:"+item.color+";'>"+t+"</div>")
+      
+    }
+         
+         inve.innerHTML = i
+
+  }
+       function clear(){
+         createCookie('inv', JSON.stringify([]));
+       }
+     let file = "./crates.json"
+      var bank = getCookie('bank');
+      var inv = getCookie('inv');
+       if(bank == ""){
+         createCookie('bank', 15);
+         var bank = getCookie('bank');
+       }
+       if(inv == ""){
+         
+          createCookie('inv', JSON.stringify([]));
+         var inv = getCookie('inv');
+       }
+      var arr = JSON.parse(inv);
+      // console.log(arr)
+      // console.log(bank)
+      // createCookie('bank', 15);
 function min(item){
       console.log(item)
         x = document.getElementsByClassName(item)
@@ -34,15 +111,39 @@ function min(item){
    return response.json();
 })
 .then(data => {
-       //console.log(data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)])
+  var bank = getCookie('bank');
+  var inv = getCookie('inv');
+  var arr = JSON.parse(inv);
+  if(data.crates[item].price<=getCookie('bank')){
+    //console.log(data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)])
       var x = document.getElementById("popup");
   if(x.style.display != "block"){ //anti spam check thingy
     x.style.display = "block";
+  let select = Math.floor(Math.random()*data.crates[item].contents.length)
+  x.innerHTML="you got a:</br></br><code> >> "+(data.crates[item].contents[select].color) + (' ( r = '+data.crates[item].contents[select].rarity+ " && value = " +data.crates[item].contents[select].value + ")</code>").fontsize(1)
+  x.style.background=(data.crates[item].contents[select].color)
   
-  x.innerHTML="you unboxed:</br></br><code> >> "+(data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)].color) + (' ( r = '+data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)].rarity+ " && value = " +data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)].value + ")</code>").fontsize(1)
-  x.style.background=(data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)].color)
-  setTimeout(function() { document.getElementById("popup").style.display = "none"; }, 3000);
+  
+    createCookie('bank', bank-data.crates[item].price);
+    console.log(getCookie('bank'))
+    arr.push(data.crates[item].contents[select])
+       createCookie('inv', JSON.stringify(arr));
+    updateInv()
+  setTimeout(function() { document.getElementById("popup").style.display = "none"; }, 1000);
+    
+  } 
+    
+  }else {
+    var x = document.getElementById("popup");
+  if(x.style.display != "block"){ //anti spam check thingy
+    x.style.display = "block";
+  
+  x.innerHTML="you can't afford this:("
+  x.style.background=("#000000")
+  setTimeout(function() { document.getElementById("popup").style.display = "none"; }, 1000);
+  } 
   }
+      
 
 })
       
@@ -53,29 +154,62 @@ function min(item){
 })
 
 .then(data => {
+ var intervalID = window.setInterval(myCallback, 500);
 
-    
-    console.log(data)
+function myCallback() {
+ updateInv()
+} 
+    var bank = getCookie('bank');
+    var inv = getCookie('inv');
+    inv = JSON.parse(inv)
+    document.write("<div style='position:absolute;right:5%;'>")
+    document.write("inv:{ //<a style='color:#696969;' href = \"https://github.com/squiresgrant\">https://github.com/squiresgrant</a> <a style='color:pink;' href=\"https://github.com/squiresgrant/colors\">v1.0+3</a><a style='color=purple;'>\<3</a></br>")
+    document.write("items:[</br>")
+document.write("<div id='inv'>")
+    for(let item of inv){
+      
+      let t = '{color:'+String(item.color)+', rarity:'+String(item.rarity)+', value: '+String(item.value)+'}'
+      document.write("<div id='"+inv.indexOf(item)+"'style='color:"+item.color+";'>"+t+"</div>")
+      let th = document.getElementById(inv.indexOf(item));
+      th.onmouseover = function() {
+        th.innerHTML = "sell?"
+      }
+      th.onmouseout = function() {
+        th.innerHTML = t
+      }
+      th.onclick = function(){
+        createCookie('bank', parseInt(getCookie('bank'))+parseInt(item.value));
+        inv.splice(inv.indexOf(item),1)
+        createCookie('inv', JSON.stringify(inv));
+        updateInv()
+      }
+    }
+  document.write("</div>")
+    document.write("],</br>")
+    document.write("bank:<div id='balance'>"+bank+"</br></div>")
+    document.write("}")
+    document.write("</div>")
     for(let crate of data.crates){
+      document.write("{</br>name: "+crate.name)
       document.write("</br>price: "+crate.price)
-      document.write("</br>name: "+crate.name)
       document.write("<div onclick='min(\""+data.crates.indexOf(crate)+"\")'</br>contents: [<div class='"+data.crates.indexOf(crate)+"'>")
       for(let item of crate.contents){
         if(item==crate.contents[0]){
-        document.write("{color:"+item.color+", rarity:"+item.rarity+", value:"+item.value+"}")
+        document.write("<div style='color:"+item.color+";'>{color:"+item.color+", rarity:"+item.rarity+", value:"+item.value+"}</div>")
         } else {
-        document.write("</br>{color:"+item.color+", rarity:"+item.rarity+", value:"+item.value+"}")
+        document.write("<div style='color:"+item.color+";'>{color:"+item.color+", rarity:"+item.rarity+", value:"+item.value+"}</div>")
         }
         
       }
-      document.write("</br></div>]</div>")
+      document.write("</div>]</div>}")
       x = document.getElementsByClassName(data.crates.indexOf(crate))
       x[0].hidden=true
     //x[i].outerText="\ncontents: [ ... ] <div class='"+item+"'>"; 
 
     
-    
-      document.write("</br><button onclick='roll("+data.crates.indexOf(crate)+")'>roll</button>")
+      
+      document.write("</br><button style='  padding: 6px 16px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 6px;'onclick='roll("+data.crates.indexOf(crate)+")'>roll</button>")
+     // document.write("<button  style='  padding: 6px 16px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 6px;'onclick='createCookie(\"inv\", JSON.stringify([]));updateInv()'>reset</button>")
     //document.write("<p>" + d.crates[0].price + "</p>")
       
       
@@ -96,11 +230,10 @@ document.write('<div id = "popup"style="height:50%;position:absolute;width:100%;
   }
 
 
-
 })   
   //
 
-    
+      
     </script>
   
 
