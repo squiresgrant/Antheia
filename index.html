@@ -92,8 +92,31 @@
       let hex = (rgbToHex(r, g, b))
       hex = hex.split(".")[0]
       console.log(hex)
-      let v = Math.floor(((255*3)-(r+g+b))/5)
-      let ne = {"color": hex, "rarity": "crafted", "value": v}
+      //let v = Math.floor(((255*3)-(r+g+b))/5)
+    let v = 0; 
+    let hexadecimal = {"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"a":10,"A":10,"b":11,"B":11,"c":12,"C":12,"d":13,"D":13,"e":14,"E":14,"f":15,"F":15}
+    for(let letter of hex.split("#")[1].split("")){
+      v+= hexadecimal[letter]
+    }
+    let craft = ""
+    if(v==90){
+      craft+="pure"
+    } else if (v>=80){
+      craft+="pure-ish"
+    } else if(v >=70){
+      craft+="bright"
+    } else if(v >= 60){
+      craft+="bright-ish"
+    } else if(v>= 50){
+      craft+="normal-ish"
+    } else if(v>=40){
+      craft+="normal"
+    } else if(v>=20){
+      craft+="dirty-ish"
+    } else {
+      craft+="dirty"
+    }
+      let ne = {"color": hex, "rarity": craft + "\<font size=1>(crafted)\</font>", "value": v}
     //if(data!=index && inv[data].color != inv[data].color){
       
     var inv = getCookie('inv');
@@ -175,6 +198,7 @@
           return response.json();
         })
         .then(data => {
+          
           var bank = getCookie('bank');
           var inv = getCookie('inv');
           var arr = JSON.parse(inv);
@@ -227,7 +251,7 @@
         var inv = getCookie('inv');
         inv = JSON.parse(inv)
         document.write("<div style='position:absolute;right:5%;'>")
-        document.write("inv:{ //<a style='color:#696969;' href = \"https://github.com/squiresgrant\">https://github.com/squiresgrant</a> <a style='color:pink;' href=\"https://github.com/squiresgrant/colors\">v1.1+2</a><a style='color=purple;'>\<3</a></br>")
+        document.write("inv:{ //<a style='color:#696969;' href = \"https://github.com/squiresgrant\">https://github.com/squiresgrant</a> <a style='color:pink;' href=\"https://github.com/squiresgrant/colors\">v1.2+1</a><a style='color=purple;'>\<3</a></br>")
         document.write("items:[</br>")
         document.write("<div id='inv'>")
         for (let item of inv) {
@@ -272,7 +296,7 @@
 
 
 
-          document.write("</br><button style='  padding: 3px 13px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 3px;'onclick='roll(" + data.crates.indexOf(crate) + ")'>roll</button>")
+          document.write("<button style='  padding: 3px 13px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 3px;'onclick='roll(" + data.crates.indexOf(crate) + ")'>roll</button></br>")
           // document.write("<button  style='  padding: 6px 16px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 6px;'onclick='createCookie(\"inv\", JSON.stringify([]));updateInv()'>reset</button>")
           //document.write("<p>" + d.crates[0].price + "</p>")
 
