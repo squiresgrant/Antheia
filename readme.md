@@ -9,7 +9,7 @@ to learn more about making html pages with (somewhat) pure javascript and to wor
 
 +(not going to make a tutorial, you can figure it out)
 
-*please note, i work in backend, making the site look good is not a priority, rather making it work good and user friendly*
+*please note, i work more in backend, making the site look good is not a priority, rather making it work good and user friendly*
 
 
 
