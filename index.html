@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>color;)</title>
+  <title>Antheia</title>
 
   <style>
 
@@ -159,7 +159,7 @@
       inv.splice(index, 1)
       console.log(inv)
       createCookie('inv', JSON.stringify(inv));
-      updateInv()
+ 
 
 
     }
@@ -177,11 +177,15 @@
  }
       */
       for (let item of inv) {
-
+      
+        
         let t = '{color:' + String(item.color) + ', rarity:' + String(item.rarity) + ', value: ' + String(item.value) + '}'
-
+        if(item.s){
+          i += ("<div class='shiny' ondrop=\"drop(event," + inv.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'>" + t + " //shiny!</div>")
+        
+        } else {
         i += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
-
+        }
       }
 
       inve.innerHTML = i
@@ -189,11 +193,13 @@
     }
     function clear() {
       createCookie('inv', JSON.stringify([]));
+      createCookie('storage', JSON.stringify([]));
       createCookie('bank', 15);
     }
     let file = "./crates.json"
     var bank = getCookie('bank');
     var inv = getCookie('inv');
+    var storage = getCookie('storage');
     if (bank == "") {
       createCookie('bank', 15);
       var bank = getCookie('bank');
@@ -203,7 +209,13 @@
       createCookie('inv', JSON.stringify([]));
       var inv = getCookie('inv');
     }
+    if (storage == "") {
+
+      createCookie('storage', JSON.stringify([]));
+      var inv = getCookie('storage');
+    }
     var arr = JSON.parse(inv);
+    var storage = JSON.parse(storage);
     // console.log(arr)
     // console.log(bank)
     // createCookie('bank', 15);
@@ -231,17 +243,29 @@
             var x = document.getElementById("popup");
             if (x.style.display != "block") { //anti spam check thingy
               x.style.display = "block";
+              let chance = Math.floor(Math.random() * 100)
+              let shiny = chance > 98
+              
               let select = Math.floor(Math.random() * data.crates[item].contents.length)
+              if(!shiny){
               x.innerHTML = "you got a:</br></br><code> >> " + (data.crates[item].contents[select].color) + (' ( r = ' + data.crates[item].contents[select].rarity + " && value = " + data.crates[item].contents[select].value + ")</code>").fontsize(1)
+              } else {
+                 x.innerHTML = "you got a (shiny):</br></br><code> >> " + (data.crates[item].contents[select].color) + (' ( r = ' + data.crates[item].contents[select].rarity + " && value = " + data.crates[item].contents[select].value + ")</code>").fontsize(1)
+             
+              }
               x.style.background = (data.crates[item].contents[select].color)
 
 
               createCookie('bank', bank - data.crates[item].price);
-              console.log(getCookie('bank'))
+              console.log(chance)
+                data.crates[item].contents[select]['storage'] = false
+                data.crates[item].contents[select]['s'] = shiny
               arr.push(data.crates[item].contents[select])
+                
               createCookie('inv', JSON.stringify(arr));
-              updateInv()
-              setTimeout(function () {document.getElementById("popup").style.display = "none";}, 1000);
+             
+              setTimeout(function () {document.getElementById("popup").style.display = "none";}, 500);
+              
 
             }
 
@@ -266,22 +290,45 @@
       })
 
       .then(data => {
-        var intervalID = window.setInterval(myCallback, 500);
+        var intervalID = window.setInterval(myCallback, 300);
 
         function myCallback() {
           updateInv()
+          x = document.getElementsByClassName("shiny")
+          for(let i of x){
+            inner = i.innerHTML.split("")
+            //console.log(inner.split(""))
+            i.innerHTML = ""
+            for(let letter in inner){
+              let color = rgbToHex(Math.floor(Math.random() * 255),Math.floor(Math.random() * 255),Math.floor(Math.random() * 255))
+              inner[letter] = "<div style='color:"+color+";display:inline;'>" + inner[letter] + "</div>"
+              //console.log(inner[letter])
+              i.innerHTML += inner[letter]
+            }
+            
+          }
+            
+          
         }
+        document.write("<title>Antheia</title>")
+        document.write("<link rel=\"icon\" href=\"./icon.png\">")
         var bank = getCookie('bank');
         var inv = getCookie('inv');
+        var inv = getCookie('storage');
         inv = JSON.parse(inv)
         document.write("<div style='position:absolute;right:5%;'>")
-        document.write("inv:{ //<a style='color:#696969;' href = \"https://github.com/squiresgrant\">https://github.com/squiresgrant</a> <a style='color:pink;' href=\"https://github.com/squiresgrant/colors\">v1.2+1</a><a style='color=purple;'> \<3</a></br>")
+        document.write("inv:{ //<a style='color:#696969;' href = \"https://github.com/squiresgrant\">https://github.com/squiresgrant</a> <a style='color:pink;' href=\"https://github.com/squiresgrant/Antheia\">v1.2+1</a><a style='color=purple;'> \<3</a></br>")
         document.write("items:[</br>")
         document.write("<div id='inv'>")
         for (let item of inv) {
 
           let t = '{color:' + String(item.color) + ', rarity:' + String(item.rarity) + ', value: ' + String(item.value) + '}'
+          console.log(item)
+          if(item.s){
+          document.write("<div class='shiny' draggable=\"true\" id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
+          } else {
           document.write("<div draggable=\"true\" id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
+          }
           let th = document.getElementById(inv.indexOf(item));
           th.onmouseover = function () {
             th.innerHTML = "sell?"
@@ -293,15 +340,31 @@
             createCookie('bank', parseInt(getCookie('bank')) + parseInt(item.value));
             inv.splice(inv.indexOf(item), 1)
             createCookie('inv', JSON.stringify(inv));
-            updateInv()
+           
           }
         }
         document.write("</div>")
         document.write("],</br>")
+        document.write("<div id='storage' ondragover=\"allowDrop(event)\" ondrop=\"drop2(event)\">storage:[</br>")
+        let storage = getCookie("storage")
+        storage=JSON.parse(storage)
+        if(storage.length == 0){
+          document.write("/* drag items here to prevent them from being sold! */")
+        } else {
+          for(let item of storage){
+            document.write(item)
+          }
+        }
+        document.write("</br>]</div>")
         document.write("bank:<div id='balance'>" + bank + " <font size=1.5> (" + getRank() + ")</font></br></div>")
         document.write("}")
         document.write("</div>")
         for (let crate of data.crates) {
+          let r = averageColor(hexToRgb(crate.contents[0].color).r,hexToRgb(crate.contents[2].color).r)
+          let g = averageColor(hexToRgb(crate.contents[0].color).g,hexToRgb(crate.contents[2].color).g)
+          let b = averageColor(hexToRgb(crate.contents[0].color).b,hexToRgb(crate.contents[2].color).b)
+          
+          document.write("<div style='border-radius:5px;width:25%;background-color:rgba("+r+","+g+","+b+", .2)'>")
           document.write("{</br>name: " + crate.name)
           document.write("</br>price: " + crate.price)
           document.write("<div onclick='min(\"" + data.crates.indexOf(crate) + "\")'</br>contents: [<div class='" + data.crates.indexOf(crate) + "'>")
@@ -320,7 +383,7 @@
 
 
 
-          document.write("<button style='  padding: 3px 13px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 3px;'onclick='roll(" + data.crates.indexOf(crate) + ")'>roll</button></br>")
+          document.write("<button style='  padding: 3px 13px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 3px;'onclick='roll(" + data.crates.indexOf(crate) + ")'>roll</button></br></div>")
           // document.write("<button  style='  padding: 6px 16px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 6px;'onclick='createCookie(\"inv\", JSON.stringify([]));updateInv()'>reset</button>")
           //document.write("<p>" + d.crates[0].price + "</p>")
 
