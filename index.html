@@ -311,7 +311,14 @@
           
         }
         document.write("<title>Antheia</title>")
-        document.write("<link rel=\"icon\" href=\"./icon.png\">")
+        function setFavicons(favImg){
+    let headTitle = document.querySelector('head');
+    let setFavicon = document.createElement('link');
+    setFavicon.setAttribute('rel','shortcut icon');
+    setFavicon.setAttribute('href',favImg);
+    headTitle.appendChild(setFavicon);
+}
+setFavicons('https://raw.githubusercontent.com/squiresgrant/Antheia/main/icon.ico');
         var bank = getCookie('bank');
         var inv = getCookie('inv');
         var inv = getCookie('storage');
