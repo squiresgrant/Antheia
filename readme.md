@@ -1,4 +1,6 @@
-> colors!
+> Antheia
+
+named after a greek goddess of flowers, blossoms, and human love
 
 
 a small project i've decided to work on
