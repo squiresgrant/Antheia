@@ -5,10 +5,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Antheia</title>
-
+<link rel='icon' type="image/x-icon" href='https://raw.githubusercontent.com/squiresgrant/Antheia/main/icon.ico'></link>
   <style>
 
-
+.flower{
+transform:scale(0.7);
+  color:#ff6699;
+}
   </style>
 </head>
 
@@ -92,6 +95,22 @@
     function drag(ev) {
       ev.dataTransfer.setData("text", ev.target.id);
     }
+    function drop2(ev, index) {
+      ev.preventDefault();
+
+      var data = ev.dataTransfer.getData("text");
+      
+      storage=getCookie("storage")
+      storage=JSON.parse(storage)
+    inv=getCookie("inv")
+      inv=JSON.parse(inv)
+      console.log(storage)
+      storage.push(inv[data])
+      inv.splice(data,1)
+      createCookie('inv', JSON.stringify(inv))
+    createCookie('storage', JSON.stringify(storage))
+      
+    }
     function drop(ev, index) {
       ev.preventDefault();
 
@@ -165,8 +184,12 @@
     }
     function updateInv() {
       var inve = document.getElementById("inv");
+      var store = document.getElementById("storage");
+      console.log(store.innerHTML)
       var inv = getCookie('inv');
       inv = JSON.parse(inv)
+      var storage = getCookie('storage');
+      storage = JSON.parse(storage)
       var balance = document.getElementById("balance");
       balance.innerHTML = getCookie("bank") + " <font size=1.5>(" + getRank() + ")</font>"
       let i = ""
@@ -178,7 +201,7 @@
       */
       for (let item of inv) {
       
-        
+        if(!item.storage){
         let t = '{color:' + String(item.color) + ', rarity:' + String(item.rarity) + ', value: ' + String(item.value) + '}'
         if(item.s){
           i += ("<div class='shiny' ondrop=\"drop(event," + inv.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'>" + t + " //shiny!</div>")
@@ -186,9 +209,26 @@
         } else {
         i += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
         }
+        } else {
+          
+        }
       }
 
       inve.innerHTML = i
+      let s = "storage:[</br>"
+      for (let item of storage) {
+      
+        
+        let t = '{color:' + String(item.color) + ', rarity:' + String(item.rarity) + ', value: ' + String(item.value) + '}'
+        if(item.s){
+          s += ("<div class='shiny' ondrop=\"drop(event," + storage.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + storage.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + storage.indexOf(item) + "'>" + t + " //shiny!</div>")
+        
+        } else {
+        s += ("<div ondrop=\"drop(event," + storage.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + storage.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + storage.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
+        }
+        
+      }
+      store.innerHTML = s
 
     }
     function clear() {
@@ -318,6 +358,17 @@
     setFavicon.setAttribute('href',favImg);
     headTitle.appendChild(setFavicon);
 }
+        document.write("<div style='position:absolute;bottom:0%;right:0%;transform:scale(0.6);'><tt>\
+<div style='display:inline;color:rgba(0, 0, 0, 0);'>_______________________</div>.-'~~~-.</br>\
+<div style='display:inline;color:rgba(0, 0, 0, 0);'>_____________________</div>.'o  oOOOo`.</br>\
+<div style='display:inline;color:rgba(0, 0, 0, 0);'>____________________</div>:~~~-.oOo   o`.</br>\
+<div style='display:inline;color:rgba(0, 0, 0, 0);'>______________________</div>`. \ ~-.  oOOo.</br>\
+<div style='display:inline;color:rgba(0, 0, 0, 0);'>_______________________</div>`.; / ~.  OO:</br>\
+<div style='display:inline;color:rgba(0, 0, 0, 0);'>_______________________</div>.'  ;-- `.o.'</br>\
+<div style='display:inline;color:rgba(0, 0, 0, 0);'>______________________</div>,'  ; ~~--'~</br>\
+<div style='display:inline;color:rgba(0, 0, 0, 0);'>______________________</div>;  ;</br>\
+_______\|/__________\\;_\\//___\|/________       </tt></div>")
+    
 setFavicons('https://raw.githubusercontent.com/squiresgrant/Antheia/main/icon.ico');
         var bank = getCookie('bank');
         var inv = getCookie('inv');
@@ -327,42 +378,16 @@ setFavicons('https://raw.githubusercontent.com/squiresgrant/Antheia/main/icon.ic
         document.write("inv:{ //<a style='color:#696969;' href = \"https://github.com/squiresgrant\">https://github.com/squiresgrant</a> <a style='color:pink;' href=\"https://github.com/squiresgrant/Antheia\">v1.2+1</a><a style='color=purple;'> \<3</a></br>")
         document.write("items:[</br>")
         document.write("<div id='inv'>")
-        for (let item of inv) {
-
-          let t = '{color:' + String(item.color) + ', rarity:' + String(item.rarity) + ', value: ' + String(item.value) + '}'
-          console.log(item)
-          if(item.s){
-          document.write("<div class='shiny' draggable=\"true\" id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
-          } else {
-          document.write("<div draggable=\"true\" id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
-          }
-          let th = document.getElementById(inv.indexOf(item));
-          th.onmouseover = function () {
-            th.innerHTML = "sell?"
-          }
-          th.onmouseout = function () {
-            th.innerHTML = t
-          }
-          th.onclick = function () {
-            createCookie('bank', parseInt(getCookie('bank')) + parseInt(item.value));
-            inv.splice(inv.indexOf(item), 1)
-            createCookie('inv', JSON.stringify(inv));
-           
-          }
-        }
+        
         document.write("</div>")
         document.write("],</br>")
         document.write("<div id='storage' ondragover=\"allowDrop(event)\" ondrop=\"drop2(event)\">storage:[</br>")
         let storage = getCookie("storage")
         storage=JSON.parse(storage)
-        if(storage.length == 0){
+        
           document.write("/* drag items here to prevent them from being sold! */")
-        } else {
-          for(let item of storage){
-            document.write(item)
-          }
-        }
-        document.write("</br>]</div>")
+        document.write("</div>")
+        document.write("]")
         document.write("bank:<div id='balance'>" + bank + " <font size=1.5> (" + getRank() + ")</font></br></div>")
         document.write("}")
         document.write("</div>")
@@ -418,7 +443,41 @@ setFavicons('https://raw.githubusercontent.com/squiresgrant/Antheia/main/icon.ic
 
   </script>
 
-
+if you see this;) try refreshing your page! (ctrl+r will work!)<tt><bold><div  class='flower'>
+______________________________....</br>
+___________________________,;;'''';;,____________________,;;;;,</br>
+________________,________;;'_______`;;,_______________.,;;;'___;</br>
+______________,;;;_______;;_________`;;,';;;,.______,%;;'_______'</br>
+____________,;;,;;_______;;_________,;`;;;, `;::.  %%;'</br>
+___________;;;,;;;_______`'_______,;;; ;;,;;,_`::,%%;'</br>
+___________;;;,;;;,__________.,%%%%%'%_;;;;,;;___%;;;</br>
+_,%,.______`;;;,;;;,____.,%%%%%%%%%'%;_;;;;;,;;__%;;;</br>
+;,`%%%%%%%%%%`;;,;;'%%%%%%%%%%%%%'%%'__`;;;;;,;, %;;;</br>
+;;;,`%%%%%%%%%%%,;_..`%%%%%%%%;'%%%'____`;;;;,;; %%;;</br>
+_`;;;;;,`%%%%%,;;/,_.._`"""'',%%%%%______`;;;;;; %%;;,</br>
+___`;;;;;;;,;;/////,._____,;%%%%%%%_______`;;;;,`%%;;</br>
+__________;;;/%%%%,%///;;;';%%%%%%,__________`;;;%%;;,</br>
+_________;;;/%%%,%%%%%/;;;';;'%%%%%,____________`%%;;</br>
+________.;;/%%,%%%%%//;;'__;;;'%%%%%,____________%%;;,</br>
+________;;//%,%%%%//;;;'___`;;;;'%%%%_____________`%;;;</br>
+_________;;//%,%//;;;;'______`;;;;'%%%______________%;;;,</br>
+_________`;;//,/;;;'___________`;;;'%%'______________`%;;;</br>
+___________`;;;;'________________`;'%'________________`;;;;</br>
+__________________________________'______.,,,.________`;;;;</br>
+______________________________________,;;;;;;;;;;,_____`;;;;</br>
+_____________________________________;;;'____;;;,;;,____`;;;;</br>
+_____________________________________;;;______;;;;,;;.___`;;;;</br>
+_____________________________________`;;______;;;;;,;;___;;;;</br>
+_______________________________________`'______`;;;;,;;__;;;;</br>
+__________________________________________________`;;,;,_;;;;</br>
+_____________________________________________________;;,_;;;;</br>
+________________________________________________________';;;;;</br> 
+_________________________________________________________;;;;;</br>
+________________________________________________________.;;;;'</br>
+_______________________________________________________.;;;;'</br>
+______________________________________________________;;;;;'</br>
+_____________________________________________________,;;;;' //art by susie oviatt (find it <a href="https://www.asciiart.eu/plants/flowers">here</a>)</br>
+</tt></bold>
 </body>
 
 </html>
