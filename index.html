@@ -1,4 +1,4 @@
-make sure<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -248,16 +248,19 @@ transform:scale(0.7);
     if (bank == "") {
       createCookie('bank', 15);
       var bank = getCookie('bank');
+      location.reload();
     }
     if (inv == "") {
 
       createCookie('inv', JSON.stringify([]));
       var inv = getCookie('inv');
+      location.reload();
     }
     if (storage == "") {
 
       createCookie('storage', JSON.stringify([]));
       var inv = getCookie('storage');
+      location.reload();
     }
     var arr = JSON.parse(inv);
     var storage = JSON.parse(storage);
@@ -335,7 +338,7 @@ transform:scale(0.7);
       })
 
       .then(data => {
-        var intervalID = window.setInterval(myCallback, 300);
+        var intervalID = window.setInterval(myCallback, 500);
 
         function myCallback() {
           updateInv()
@@ -484,6 +487,7 @@ ______________________________________________________;;;;;'</br>
 _____________________________________________________,;;;;' //art by susie oviatt (find it <a href="https://www.asciiart.eu/plants/flowers">here</a>)</br>
 </tt></bold></div>
 stuck on this page? make sure you have cookies and javascript enabled, dont know how to? goodluck (lol)
+
 </body>
 
 </html>
