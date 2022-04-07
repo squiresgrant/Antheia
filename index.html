@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+make sure<!DOCTYPE html>
 <html>
 
 <head>
@@ -111,13 +111,20 @@ transform:scale(0.7);
     createCookie('storage', JSON.stringify(storage))
       
     }
-    function drop(ev, index) {
+    function drop(ev, index, fromstorage) {
       ev.preventDefault();
-
+      fromstorage=!fromstorage
       var data = ev.dataTransfer.getData("text");
       var inv = getCookie('inv');
       inv = JSON.parse(inv)
-      
+      var store = getCookie('storage');
+      store = JSON.parse(store)
+      if(fromstorage){
+        inv.push(store[data])
+        store.splice(data,1)
+        createCookie('storage', JSON.stringify(store))
+        createCookie('inv', JSON.stringify(inv))
+      } else {
       let r = averageColor(hexToRgb(inv[data].color).r, hexToRgb(inv[index].color).r)
       let g = averageColor(hexToRgb(inv[data].color).g, hexToRgb(inv[index].color).g)
       let b = averageColor(hexToRgb(inv[data].color).b, hexToRgb(inv[index].color).b)
@@ -168,6 +175,7 @@ transform:scale(0.7);
       
       createCookie('inv', JSON.stringify(inv));
     //}
+    }
       
     }
 
@@ -185,7 +193,7 @@ transform:scale(0.7);
     function updateInv() {
       var inve = document.getElementById("inv");
       var store = document.getElementById("storage");
-      console.log(store.innerHTML)
+      //console.log(store.innerHTML)
       var inv = getCookie('inv');
       inv = JSON.parse(inv)
       var storage = getCookie('storage');
@@ -204,10 +212,10 @@ transform:scale(0.7);
         if(!item.storage){
         let t = '{color:' + String(item.color) + ', rarity:' + String(item.rarity) + ', value: ' + String(item.value) + '}'
         if(item.s){
-          i += ("<div class='shiny' ondrop=\"drop(event," + inv.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'>" + t + " //shiny!</div>")
+          i += ("<div class='shiny' ondrop=\"drop(event," + inv.indexOf(item) + ", false)\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'>" + t + " //shiny!</div>")
         
         } else {
-        i += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
+        i += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ", false)\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
         }
         } else {
           
@@ -216,17 +224,18 @@ transform:scale(0.7);
 
       inve.innerHTML = i
       let s = "storage:[</br>"
+
       for (let item of storage) {
-      
-        
+    
+        if(item != null){
         let t = '{color:' + String(item.color) + ', rarity:' + String(item.rarity) + ', value: ' + String(item.value) + '}'
         if(item.s){
-          s += ("<div class='shiny' ondrop=\"drop(event," + storage.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + storage.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + storage.indexOf(item) + "'>" + t + " //shiny!</div>")
+          s += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ", true)\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" class='shiny' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"drag into inv to sell/combine \"' id='" + storage.indexOf(item) + "'>" + t + " //shiny!</div>")
         
         } else {
-        s += ("<div ondrop=\"drop(event," + storage.indexOf(item) + ")\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + storage.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + storage.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
+        s += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ", true)\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"drag into inv to sell/combine \"' id='" + storage.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
         }
-        
+        }
       }
       store.innerHTML = s
 
@@ -375,7 +384,7 @@ setFavicons('https://raw.githubusercontent.com/squiresgrant/Antheia/main/icon.ic
         var inv = getCookie('storage');
         inv = JSON.parse(inv)
         document.write("<div style='position:absolute;right:5%;'>")
-        document.write("inv:{ //<a style='color:#696969;' href = \"https://github.com/squiresgrant\">https://github.com/squiresgrant</a> <a style='color:pink;' href=\"https://github.com/squiresgrant/Antheia\">v1.2+1</a><a style='color=purple;'> \<3</a></br>")
+        document.write("inv:{ //<a style='color:#696969;' href = \"https://github.com/squiresgrant\">https://github.com/squiresgrant</a> <a style='color:pink;' href=\"https://github.com/squiresgrant/Antheia\">v1.3+10</a><a style='color=purple;'> \<3 "+ "dXd1IQ==".fontsize(1) +"</a></br>")
         document.write("items:[</br>")
         document.write("<div id='inv'>")
         
@@ -477,7 +486,8 @@ ________________________________________________________.;;;;'</br>
 _______________________________________________________.;;;;'</br>
 ______________________________________________________;;;;;'</br>
 _____________________________________________________,;;;;' //art by susie oviatt (find it <a href="https://www.asciiart.eu/plants/flowers">here</a>)</br>
-</tt></bold>
+</tt></bold></div>
+stuck on this page? make sure you have cookies and javascript enabled, dont know how to? goodluck (lol)
 </body>
 
 </html>
