@@ -92,8 +92,9 @@ transform:scale(0.7);
       if (e < 0) {e = 0}
       return e;
     }
-    function drag(ev) {
+    function drag(ev, from) {
       ev.dataTransfer.setData("text", ev.target.id);
+      ev.dataTransfer.setData("from", from);
     }
     function drop2(ev, index) {
       ev.preventDefault();
@@ -111,19 +112,23 @@ transform:scale(0.7);
     createCookie('storage', JSON.stringify(storage))
       
     }
-    function drop(ev, index, fromstorage) {
+    function drop(ev, index, fromDrop) {
       ev.preventDefault();
-      fromstorage=!fromstorage
+      
       var data = ev.dataTransfer.getData("text");
+      var fromDrag = ev.dataTransfer.getData("from");
+      console.log(fromDrag+fromDrop)
       var inv = getCookie('inv');
       inv = JSON.parse(inv)
       var store = getCookie('storage');
       store = JSON.parse(store)
-      if(fromstorage){
+      if(fromDrag == 'store' && fromDrop == 'inv'){
+        
         inv.push(store[data])
         store.splice(data,1)
         createCookie('storage', JSON.stringify(store))
         createCookie('inv', JSON.stringify(inv))
+
       } else {
       let r = averageColor(hexToRgb(inv[data].color).r, hexToRgb(inv[index].color).r)
       let g = averageColor(hexToRgb(inv[data].color).g, hexToRgb(inv[index].color).g)
@@ -201,24 +206,15 @@ transform:scale(0.7);
       var balance = document.getElementById("balance");
       balance.innerHTML = getCookie("bank") + " <font size=1.5>(" + getRank() + ")</font>"
       let i = ""
-      /*
- for(let item of inv){
-   console.log(item)
-   i+=("<div style='color:"+item.color+";'>{color:"+String(item.color)+", rarity:"+String(item.rarity)+", value: "+String(item.value)+"}</div>")
- }
-      */
       for (let item of inv) {
       
-        if(!item.storage){
+        
         let t = '{color:' + String(item.color) + ', rarity:' + String(item.rarity) + ', value: ' + String(item.value) + '}'
         if(item.s){
-          i += ("<div class='shiny' ondrop=\"drop(event," + inv.indexOf(item) + ", false)\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'>" + t + " //shiny!</div>")
+          i += ("<div class='shiny' ondrop=\"drop(event," + inv.indexOf(item) + ", 'inv')\" ondragstart=\"drag(event, 'inv')\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'>" + t + " //shiny!</div>")
         
         } else {
-        i += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ", false)\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
-        }
-        } else {
-          
+        i += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ", 'inv')\" ondragstart=\"drag(event, 'inv')\" ondragover=\"allowDrop(event)\" draggable=\"true\" onclick='s(" + item.value + "," + inv.indexOf(item) + ")' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"sell? (or drag to combine) \"' id='" + inv.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
         }
       }
 
@@ -230,10 +226,10 @@ transform:scale(0.7);
         if(item != null){
         let t = '{color:' + String(item.color) + ', rarity:' + String(item.rarity) + ', value: ' + String(item.value) + '}'
         if(item.s){
-          s += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ", true)\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" class='shiny' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"drag into inv to sell/combine \"' id='" + storage.indexOf(item) + "'>" + t + " //shiny!</div>")
+          s += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ", 'store')\" ondragstart=\"drag(event, 'store')\" ondragover=\"allowDrop(event)\" draggable=\"true\" class='shiny' onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"drag into inv to sell/combine \"' id='" + storage.indexOf(item) + "'>" + t + " //shiny!</div>")
         
         } else {
-        s += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ", true)\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" draggable=\"true\" onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"drag into inv to sell/combine \"' id='" + storage.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
+        s += ("<div ondrop=\"drop(event," + inv.indexOf(item) + ", 'store')\" ondragstart=\"drag(event, 'store')\" ondragover=\"allowDrop(event)\" draggable=\"true\" onmouseout='this.innerHTML = \"" + t + "\"'onmouseover='this.innerHTML=\"drag into inv to sell/combine \"' id='" + storage.indexOf(item) + "'style='color:" + item.color + ";'>" + t + "</div>")
         }
         }
       }
