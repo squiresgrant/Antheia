@@ -174,7 +174,7 @@ transform:scale(0.7);
     } else {
       craft+="dirty"
     }
-      let ne = {"color": hex, "rarity": craft + "\<font size=1>(crafted)\</font>", "value": v}
+      let ne = {"color": hex, "rarity": craft + "\<font size=1>(crafted)\</font>", "value": v, "att":r,"def":g,"spd":b,"level":0,"xp":0}
     //if(data!=index && inv[data].color != inv[data].color){
       
     var inv = getCookie('inv');
@@ -291,27 +291,51 @@ transform:scale(0.7);
       x[0].hidden = !x[0].hidden
 
     }
-    async function fight() {
+    function randomColor() {
+      var letters = '0123456789ABCDEF';
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return ({
+        color: color,
+        att: hexToRgb(color).r,
+        def: hexToRgb(color).g,
+        spd: hexToRgb(color).b
+      })
+    }
+    function fight() {
       var inv = getCookie('inv');
       inv = JSON.parse(inv)
       var storage = getCookie('storage');
       storage = JSON.parse(storage)
       let team = [inv[0], inv[1], inv[2], inv[3], inv[4]]
-      let opp = [roll(0,true), roll(0,true), roll(0,true), roll(0,true), roll(0,true)]
-      
-      
+      let opp = [randomColor(), randomColor(), randomColor(), randomColor(), randomColor()]
+      document.write("<div id='fight' style='position:absolute;height: 100%;width: 100%;top:0%;background-color: "+BgColor+"'>")
+      let po = 75
+      let le = 40
+      for(let t of team){
+        document.write("<div class='"+t.color+"' style='left:"+le+"px;top:"+po+"px;position:absolute;height: 75px;width: 75px;background-color: "+t.color+"'></div>")
+        po+=90
+        le+= 15
+      }
+       po = 75
+       le = 600
+      for(let t of opp){
+        document.write("<div class='"+t.color+"' style='left:"+le+"px;top:"+po+"px;position:absolute;height: 75px;width: 75px;background-color: "+t.color+"'></div>")
+        po+=90
+        le+= 15
+      }
+      document.write("</div>")
     }
-    function roll(item, opp=false) {
+    function roll(item) {
       fetch(file)
         .then(response => {
           return response.json();
         })
         .then(data => {
-          if(!opp){
           var bank = getCookie('bank');
-          } else {
-          var bank = 999999999999999999
-          }
+          
           var inv = getCookie('inv');
           var arr = JSON.parse(inv);
           if (data.crates[item].price <= bank) {
@@ -331,15 +355,20 @@ transform:scale(0.7);
               }
               x.style.background = (data.crates[item].contents[select].color)
 
-              if(!opp){
+
               createCookie('bank', bank - data.crates[item].price);
               console.log(chance)
                 data.crates[item].contents[select]['storage'] = false
                 data.crates[item].contents[select]['s'] = shiny
+                data.crates[item].contents[select]['att'] = hexToRgb(data.crates[item].contents[select].color).r
+                data.crates[item].contents[select]['def'] = hexToRgb(data.crates[item].contents[select].color).g
+                data.crates[item].contents[select]['spd'] = hexToRgb(data.crates[item].contents[select].color).b
+                data.crates[item].contents[select]['level'] = 0
+                data.crates[item].contents[select]['xp'] = 0
               arr.push(data.crates[item].contents[select])
                 
               createCookie('inv', JSON.stringify(arr));
-              }
+              
               setTimeout(function () {document.getElementById("popup").style.display = "none";}, 500);
               
 
