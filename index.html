@@ -291,17 +291,30 @@ transform:scale(0.7);
       x[0].hidden = !x[0].hidden
 
     }
-    function roll(item) {
+    async function fight() {
+      var inv = getCookie('inv');
+      inv = JSON.parse(inv)
+      var storage = getCookie('storage');
+      storage = JSON.parse(storage)
+      let team = [inv[0], inv[1], inv[2], inv[3], inv[4]]
+      let opp = [roll(0,true), roll(0,true), roll(0,true), roll(0,true), roll(0,true)]
+      
+      
+    }
+    function roll(item, opp=false) {
       fetch(file)
         .then(response => {
           return response.json();
         })
         .then(data => {
-          
+          if(!opp){
           var bank = getCookie('bank');
+          } else {
+          var bank = 999999999999999999
+          }
           var inv = getCookie('inv');
           var arr = JSON.parse(inv);
-          if (data.crates[item].price <= getCookie('bank')) {
+          if (data.crates[item].price <= bank) {
             //console.log(data.crates[item].contents[Math.floor(Math.random()*data.crates[item].contents.length)])
             var x = document.getElementById("popup");
             if (x.style.display != "block") { //anti spam check thingy
@@ -318,7 +331,7 @@ transform:scale(0.7);
               }
               x.style.background = (data.crates[item].contents[select].color)
 
-
+              if(!opp){
               createCookie('bank', bank - data.crates[item].price);
               console.log(chance)
                 data.crates[item].contents[select]['storage'] = false
@@ -326,12 +339,12 @@ transform:scale(0.7);
               arr.push(data.crates[item].contents[select])
                 
               createCookie('inv', JSON.stringify(arr));
-             
+              }
               setTimeout(function () {document.getElementById("popup").style.display = "none";}, 500);
               
 
             }
-
+            
           } else {
             var x = document.getElementById("popup");
             if (x.style.display != "block") { //anti spam check thingy
@@ -353,8 +366,9 @@ transform:scale(0.7);
       })
 
       .then(data => {
-        var intervalID = window.setInterval(myCallback, 500);
-        function myCallback() {
+        
+        var intervalID = window.setInterval(udate, 500);
+        function udate() {
           updateInv()
           
           x = document.getElementsByClassName("shiny")
@@ -383,7 +397,7 @@ transform:scale(0.7);
     headTitle.appendChild(setFavicon);
     console.log("favicon set")
 }
-        document.write("<div style='position:absolute;bottom:0%;right:0%;transform:scale(0.6);'><tt>\
+        document.write("<div id='shroom' style='position:absolute;bottom:0%;right:0%;transform:scale(0.6);'><b><strong><tt>\
 <div style='display:inline;color:rgba(0, 0, 0, 0);'>_______________________</div><div style='display:inline;color:red;'>.-'~~~-.</div></br>\
 <div style='display:inline;color:rgba(0, 0, 0, 0);'>_____________________</div><div style='display:inline;color:red;'>.'o  oOOOo`.</div></br>\
 <div style='display:inline;color:rgba(0, 0, 0, 0);'>____________________</div><div style='display:inline;color:red;'>:~~~-.oOo   o`.</div></br>\
@@ -392,7 +406,7 @@ transform:scale(0.7);
 <div style='display:inline;color:rgba(0, 0, 0, 0);'>_______________________</div><div style='display:inline;color:#964B00;'>.'  ;</div><div style='display:inline;color:red;'>-- `.o.'</div></br>\
 <div style='display:inline;color:rgba(0, 0, 0, 0);'>______________________</div><div style='display:inline;color:#964B00;'>,'  ;</div><div style='display:inline;color:red;'> ~~--'~</div></br>\
 <div style='display:inline;color:rgba(0, 0, 0, 0);'>______________________</div><div style='display:inline;color:#964B00;'>';  ;</div></br>\
-<div style='display:inline;color:green;'>_______\|/__________\\;_\\//___\|/________       </div></tt></div>")
+<div style='display:inline;color:green;'>_______\|/__________\\;_\\//___\|/________       </div></b></strong></tt></div>") //yeah i stacked a bold and a stong tag, fight me
     
 setFavicons('https://raw.githubusercontent.com/squiresgrant/Antheia/main/icon.ico');
         var bank = getCookie('bank');
@@ -438,7 +452,7 @@ setFavicons('https://raw.githubusercontent.com/squiresgrant/Antheia/main/icon.ic
           x[0].hidden = true
           //x[i].outerText="\ncontents: [ ... ] <div class='"+item+"'>"; 
 
-
+          
 
           document.write("<button style='  padding: 3px 13px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 3px;'onclick='roll(" + data.crates.indexOf(crate) + ")'>roll</button></br></div>")
           // document.write("<button  style='  padding: 6px 16px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 6px;'onclick='createCookie(\"inv\", JSON.stringify([]));updateInv()'>reset</button>")
@@ -448,6 +462,9 @@ setFavicons('https://raw.githubusercontent.com/squiresgrant/Antheia/main/icon.ic
         }
 
         document.body.style.backgroundColor = BgColor;
+        //centered button
+        document.write("<div style='position:absolute;left:50%;top:10%;transform:translate(-50%,-20%);'>")
+        document.write("<button style='  padding: 6px 16px;font-size: 14px; display: inline-block;cursor: pointer;background-color: #FAFBFC; border: 1px solid rgba(27, 31, 35, 0.15); border-radius: 6px;'onclick='fight()'>fight!</button></div>")
         return (0)
       }).then((open) => {
         var number = 5; //just for an example
